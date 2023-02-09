@@ -3,19 +3,19 @@
 // set variables for all hardwares
 
 //setup some other helpful variable
-int state = 0 //state == 0 is line following state == 1 is grabbing
+int state = 0; //state == 0 is line following state == 1 is grabbing
 
 
 //initialization
 void setup(){
 
-//set pin
+	//set pin
 
-// Initialize pixy
+	// Initialize pixy
 
-//check claw position and set it to open.
+	//check claw position and set it to open.
 
-//check camera position and set it to down
+	//check camera position and set it to down
 
 }
 
@@ -27,15 +27,15 @@ void loop(){
 
 		//continue moving until close to the object. And close claw
 		
-}else{
+	}else{
 
-//check for vectors, coordinates, and interactions
+		//check for vectors, coordinates, and interactions
 
-//case1 no new vector (straight)
+		//case1 no new vector (straight)
 
-//case 2 new vector. (calculate movement using coordinates)
+		//case 2 new vector. (calculate movement using coordinates)
 
-//case 3 saw at the end of line && set state to 1
-}
+		//case 3 saw at the end of line && set state to 1
+	}
 	
 }
