@@ -1,9 +1,17 @@
 // include all libraries
+#include <stdio.h>;
+#include <Pixy2.h>;
+#include <Servo.h>;
+#include<DC_Motor.h> 
 
 // set variables for all hardwares
-
+Pix2 pixy;
+Servo servo_claw;
+Servo servo_arm;
+DC_Motor motor_l; 
+DC_Motor motor_r; 
 //setup some other helpful variable
-int state = 0; //state == 0 is line following state == 1 is grabbing
+int state = 1; //state == 1 is line following state == 0 is grabbing
 
 
 //initialization
