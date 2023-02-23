@@ -2,40 +2,49 @@
 #include <stdio.h>;
 #include <Pixy2.h>;
 #include <Servo.h>;
-#include "CytronMotorDriver.h"
+#include <CytronMotorDriver.h>;
 
 // set variables for all hardwares
 Pix2 pixy;
 Servo servo_claw;
-Servo servo_cam;
-CytronMD motor_l(PWM_DIR, 3, 4);  // PWM 1 = Pin 3, DIR 1 = Pin 4.
-CytronMD motor_r(PWM_DIR, 9, 10); // PWM 2 = Pin 9, DIR 2 = Pin 10.
+Servo servo_arm;
 
-//setup some other helpful variable
+// motor l is attached backward and negative value is forward.
+// motor r is attached normally and positive value is forward.
+// eg. 
+// motor_l.setSpeed(-128);
+// motor_r.setSpeed(128);
+// will move both motor forward at 50% power.
+
+CytronMD motor_l(PWM_DIR, 3, 8);  // PWM 1 = Pin 3, DIR 1 = Pin 8.
+CytronMD motor_r(PWM_DIR, 6, 7); // PWM 2 = Pin 6, DIR 2 = Pin 7.
+
+// setup some other helpful variable
 bool state = true; //state == 1 is line following state == 0 is grabbing
 bool firstrun = true;
 
-//initialization
+// initialization
 void setup(){
 	//start serial monitor
 	Serial.begin(9600);
   	Serial.print("Starting...\n");
+	
+	// Initialize pixy
+  	pixy.init();
+	
 	//set pin
 	servo_claw.attach(4); // range open 60-0 close
 	servo_arm.attach(5);  // rangee up 100-40 down
-	 
-	// Initialize pixy
-  	pixy.init();
+	servo_claw.write(90) //set open angle to 90 degrees.
+	servo_arm.write(0) //set camera arm angle at 0 degree.
+	
+	
 	//set claw position to open.
 	char buffer[40];
 	sprintf(buffer, "The starting angle of claw servo is %d degree", servo_claw.read());
 	Serial.println(buffer);
-	sprintf(buffer, "The starting angle of camera servo is %d degree", servo_cam.read());
-
-	
-// 	servo_claw.write(90) //set open angle to 90 degrees.
-	//check camera position and set it to down
-// 	servo_cam.write(0) //set camera arm angle at 0 degree.
+	sprintf(buffer, "The starting angle of camera servo is %d degree", servo_arm.read());
+	Serial.println(buffer);
 }
 
 void loop(){
@@ -60,8 +69,21 @@ void loop(){
 		// Member variables for pixy.line(var type :array of Vector(struct))
 		// This array contains either all of the detected lines if getAllFeatures() is called or the Vector if getMainFeatures() is called.
 		
-		//here are some helpful info for Vector Struct
-		//
+		// here are some helpful info for Vector Struct
+		
+		// uint8_t m_x0
+		// This variable contains the x location of the tail of the Vector or line. The value ranges between 0 and frameWidth (79) 3)
+		
+		// uint8_t m_y0
+		// This variable contains the y location of the tail of the Vector or line. The value ranges between 0 and frameWidth (52).
+		
+		// uint8_t m_x1
+		// This variable contains the x location of the head (arrow end) of the Vector or line. The value ranges between 0 and frameWidth (79).
+		
+		// uint8_t m_y1
+		//This variable contains the y location of the head (arrow end) of the Vector or line. The value ranges between 0 and frameWidth (52).
+
+
 		for (i=0; i<pixy.line.numVectors; i++) 
 		{
 			sprintf(buf, "line %d: ", i);
