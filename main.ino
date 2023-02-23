@@ -21,14 +21,21 @@ void setup(){
 	Serial.begin(9600);
   	Serial.print("Starting...\n");
 	//set pin
-	servo_claw.attach(1);
-	servo_arm.attach(2);
+	servo_claw.attach(4); // range open 60-0 close
+	servo_arm.attach(5);  // rangee up 100-40 down
+	 
 	// Initialize pixy
   	pixy.init();
 	//set claw position to open.
-	servo_claw.write(90) //set open angle to 90 degrees.
+	char buffer[40];
+	sprintf(buffer, "The starting angle of claw servo is %d degree", servo_claw.read());
+	Serial.println(buffer);
+	sprintf(buffer, "The starting angle of camera servo is %d degree", servo_cam.read());
+
+	
+// 	servo_claw.write(90) //set open angle to 90 degrees.
 	//check camera position and set it to down
-	servo_cam.write(0) //set camera arm angle at 0 degree.
+// 	servo_cam.write(0) //set camera arm angle at 0 degree.
 }
 
 void loop(){
@@ -44,7 +51,18 @@ void loop(){
 		pixy.line.getAllFeatures();
 
 		// print all vectors
-		for (i=0; i<pixy.line.numVectors; i++)
+		
+		//<pixy.line.numVectors> is
+		// Member variables for pixy.line(var type :uint8_t)
+		// it keep tracks of: The number of lines in the vectors variable.
+
+		//<pixy.line.vecotrs> is
+		// Member variables for pixy.line(var type :array of Vector(struct))
+		// This array contains either all of the detected lines if getAllFeatures() is called or the Vector if getMainFeatures() is called.
+		
+		//here are some helpful info for Vector Struct
+		//
+		for (i=0; i<pixy.line.numVectors; i++) 
 		{
 			sprintf(buf, "line %d: ", i);
 			Serial.print(buf);
@@ -82,6 +100,7 @@ void loop(){
 	}
 	
 }
+
 
 
 void moveMotor() {
