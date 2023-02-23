@@ -35,8 +35,8 @@ void setup(){
 	//set pin
 	servo_claw.attach(4); // range open 60-0 close
 	servo_arm.attach(5);  // rangee up 100-40 down
-	servo_claw.write(90) //set open angle to 90 degrees.
-	servo_arm.write(0) //set camera arm angle at 0 degree.
+	servo_claw.write(60) //set open angle to 90 degrees.
+	servo_arm.write(40) //set camera arm angle at 0 degree.
 	
 	
 	//set claw position to open.
@@ -123,6 +123,17 @@ void loop(){
 	
 }
 
+void reverseServo(Servo s){
+	if(s.read() == 100){
+		s.write(40);
+	}else if(s.read() == 60){
+		s.write(0);
+	}else if(s.read() == 40){
+		s.write(100);
+	}else if(s.read() == 0){
+		s.write(60);
+	}
+}
 
 
 void moveMotor() {
