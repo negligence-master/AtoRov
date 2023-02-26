@@ -12,6 +12,7 @@
 
 
 ### file management describtion here:
+- README.md is project description. You can learn how to edit using mark down by reading [this](https://about.gitlab.com/handbook/markdown-guide/) article.
 - you can find all the diagram in the diagram folder!
   - flow charts
   - eletrical diagram
@@ -23,7 +24,9 @@
   - idea.txt is for new ideas. add findings, ideas here!
 - you can find all the documentation for our project in the document folder
   - here's a quick view at what's in that folder.
-  - README.md is project description. You can learn how to edit using mark down by reading [this](https://about.gitlab.com/handbook/markdown-guide/) article.
+  - project logo
+  - charts and things of less of interest
+  - ...okay i really don't know. don't ask me. plz.
 
 
 ### packages
