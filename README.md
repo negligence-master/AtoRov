@@ -1,4 +1,6 @@
-# AtoRov (a negligence project)
+<img src="./documentation/project_icon.png" width="500" alt="project logo">
+
+# AtoRov (a Negligence project)
 > Autonomous Rover written in Arduino.
 
 
