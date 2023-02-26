@@ -12,8 +12,10 @@
 
 
 ### file management describtion here:
--  map.png is flow chart, you can also view it [here](https://miro.com/welcomeonboard/WHg5V3BNM1RGY2w5Qk85a2dNZ0NXc29yY28zYXRtR0xyVVhPWWJlbE0ybVh2SDRsNWdGZnMxaGNqakhUS1VTU3wzNDU4NzY0NTQ0MTQyNDA1NzM5fDI=?share_link_id=759237895626)
 - you can find all the diagram in the diagram folder!
+  - flow charts
+  - eletrical diagram
+  - ...idk
 - you can find all the code in code folder!  
   - here's a quick view at what's in that folder.
   - main.ino is main code, **please comment the code!**
