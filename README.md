@@ -37,3 +37,7 @@ For the code to work you need to download the following libraryies
 - [pixy2 library](https://pixycam.com/downloads-pixy2/). (be very careful as pixy library is different from pixy2.)
 
 - [motor driver library](https://github.com/CytronTechnologies/CytronMotorDriver)(follow the installation instruction in the linked page)
+
+## other helpful links
+
+= [pixy2 line tracking documentation](https://docs.pixycam.com/wiki/doku.php?id=wiki:v2:line_api)
