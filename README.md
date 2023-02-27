@@ -40,4 +40,4 @@ For the code to work you need to download the following libraryies
 
 ## other helpful links
 
-= [pixy2 line tracking documentation](https://docs.pixycam.com/wiki/doku.php?id=wiki:v2:line_api)
+- [pixy2 line tracking documentation](https://docs.pixycam.com/wiki/doku.php?id=wiki:v2:line_api)
