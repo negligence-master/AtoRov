@@ -205,7 +205,16 @@ void spin(int direction, int dur){
 
 // take in a Vector v and spit out an angle in float.
 float calc_turn_angle(Vecotr v){
-	double delta_x = v.m_x0 - v.m_x1
-	double delta_y = v.m_y0 - v.m_y1
-	return atanf(delta_y/delta_x)/6.28*360;
+	double delta_x = v.m_x1 - v.m_x0 // right is positive
+	double delta_y = v.m_y0 - v.m_y1 // up is positive
+	angle = atanf(delta_y/delta_x)/6.28*360
+	if(delta_x > 0 && delta_y > 0){
+		return 90-angle
+	}else if(delta_x > 0 && delta_y < 0){
+		return -1*angle+90
+	}else if(delta_x < 0 && delta_y > 0){
+		return -1*angle-90
+	}else if(delta_x < 0 && delta_y < 0){
+		return angle+90
+	}
 }
