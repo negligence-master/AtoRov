@@ -1,8 +1,10 @@
 // include all libraries
-#include <stdio.h>;
-#include <Pixy2.h>;
-#include <Servo.h>;
-#include <CytronMotorDriver.h>;
+#include <stdio.h>; // for basic functionality
+#include <chrono>   // for timer
+#include <cmath>    // for trigs
+#include <Pixy2.h>; // for pixy duhhh
+#include <Servo.h>; // for servo
+#include <CytronMotorDriver.h>; //for motor driver
 
 // set variables for all hardwares
 Pix2 pixy;
@@ -20,8 +22,10 @@ CytronMD motor_l(PWM_DIR, 3, 8);  // PWM 1 = Pin 3, DIR 1 = Pin 8.
 CytronMD motor_r(PWM_DIR, 6, 7); // PWM 2 = Pin 6, DIR 2 = Pin 7.
 
 // setup some other helpful variable
-bool state = true; //state == 1 is line following state == 0 is grabbing
+bool state = true; // state == 1 is line following state == 0 is grabbing
 bool firstrun = true;
+int vect_count = 0;
+int occurance = 0; // of times that rover had chosen straight 
 
 // initialization
 void setup(){
@@ -40,7 +44,7 @@ void setup(){
 	
 	
 	//set claw position to open.
-	char buffer[40];
+	char buffer[40]; //for string formatting ...DO NOT REMOVE...
 	sprintf(buffer, "The starting angle of claw servo is %d degree", servo_claw.read());
 	Serial.println(buffer);
 	sprintf(buffer, "The starting angle of camera servo is %d degree", servo_arm.read());
@@ -54,11 +58,8 @@ void loop(){
 			pixy.changeProg("line"); //changing to linefollowing library
 			firstrun = False; //make sure it only run in the first time.
 		}
-		int8_t i;
-		char buf[128];
-
-		pixy.line.getAllFeatures();
-
+		
+		
 		// print all vectors
 		
 		//<pixy.line.numVectors> is
@@ -81,25 +82,59 @@ void loop(){
 		// This variable contains the x location of the head (arrow end) of the Vector or line. The value ranges between 0 and frameWidth (79).
 		
 		// uint8_t m_y1
-		//This variable contains the y location of the head (arrow end) of the Vector or line. The value ranges between 0 and frameWidth (52).
+		// This variable contains the y location of the head (arrow end) of the Vector or line. The value ranges between 0 and frameWidth (52).
 
 
-		for (i=0; i<pixy.line.numVectors; i++) 
-		{
-			sprintf(buf, "line %d: ", i);
-			Serial.print(buf);
-			pixy.line.vectors[i].print();
-		}
+		int8_t i; // for loop indexing ...DO NOT REMOVE...
+		
+		char buf[128]; // for string formating ...DO NOT REMOVE...
 
-		// print all intersections
-		for (i=0; i<pixy.line.numIntersections; i++)
-		{
-			sprintf(buf, "intersection %d: ", i);
-			Serial.print(buf);
-			pixy.line.intersections[i].print();
+		pixy.line.getAllFeatures();
+
+		// detect if new vector found
+		if (pixy.line.numVectors >= vector_count){
+			occurance = 0;
+			vector_count = pixy.line.numVectors; // update vector count
+			float turn_angle = calc_turn_angle(pixy.line.vectors[vector_count-1]); // calculate turn angle by passing the newest vector to a function.
+											       // note that 1st vector has index 0, 2nd vector has index 1....
+											       // therefore the newest vector will always be index len-1
+			int direction = 1; // default to turn right
+			if(turn_angle < 0){ // adjust if it is actually left.
+				turn_angle = turn_angle * -1
+				dir = -1;
+			}
+			float dur = calc_turn_dur(turn_angle);
+			spin(dir, dur);
+			
+		}else{
+			occurance += 1
+			if(occurance == 1){
+				straight100(); // start fast
+			}else if(occurance == 2){
+				straight50(); // gradually slow down
+			}else{
+				stiaght25(); // slow down to 25%
+			}
+			
 		}
 		
-		//check for vectors, coordinates, and interactions
+// sample code for pixy library
+// 		for (i=0; i<pixy.line.numVectors; i++) 
+// 		{
+// 			sprintf(buf, "line %d: ", i);
+// 			Serial.print(buf);
+// 			pixy.line.vectors[i].print();
+// 		}
+
+// 		// print all intersections
+// 		for (i=0; i<pixy.line.numIntersections; i++)
+// 		{
+// 			sprintf(buf, "intersection %d: ", i);
+// 			Serial.print(buf);
+// 			pixy.line.intersections[i].print();
+// 		}
+		
+		
 
 		//case1 no new vector (straight)
 
@@ -135,29 +170,42 @@ void reverseServo(Servo s){
 	}
 }
 
+// go stragith at 25% power
+void straight25(){
+  motor_r.setSpeed(64);   // Motor 1 runs forward at 25% speed.
+  motor_l.setSpeed(-64);  // Motor 2 runs forward at 25% speed.	
+}
 
-void moveMotor() {
-  motor1.setSpeed(128);   // Motor 1 runs forward at 50% speed.
-  motor2.setSpeed(-128);  // Motor 2 runs backward at 50% speed.
-  delay(1000);
-  
-  motor1.setSpeed(255);   // Motor 1 runs forward at full speed.
-  motor2.setSpeed(-255);  // Motor 2 runs backward at full speed.
-  delay(1000);
 
-  motor1.setSpeed(0);     // Motor 1 stops.
-  motor2.setSpeed(0);     // Motor 2 stops.
-  delay(1000);
+// go stragith at 50% power
+void straight50(){
+  motor_r.setSpeed(128);
+  motor_l.setSpeed(-128);
+}
 
-  motor1.setSpeed(-128);  // Motor 1 runs backward at 50% speed.
-  motor2.setSpeed(128);   // Motor 2 runs forward at 50% speed.
-  delay(1000);
-  
-  motor1.setSpeed(-255);  // Motor 1 runs backward at full speed.
-  motor2.setSpeed(255);   // Motor 2 runs forward at full speed.
-  delay(1000);
+// go stragith at 100% power
+void straight100(){
+  motor_r.setSpeed(256);
+  motor_l.setSpeed(-256); 	
+}
 
-  motor1.setSpeed(0);     // Motor 1 stops.
-  motor2.setSpeed(0);     // Motor 2 stops.
-  delay(1000);
-} 
+// spin in _ direction. (direction should be int +1 for right and -1 for left.)
+// for set ammount of time in millisecond
+
+void spin(int direction, int dur){
+    auto now = std::chrono::steady_clock::now;
+    auto stop_time = now() + dur;
+    motor_r.setSpeed(64*direction);  // Motor 1 runs forward/backward at 25% speed.
+    motor_l.setSpeed(64*direction);  // Motor 2 runs backward/forward at 25% speed.
+    while (now() < stop_time) {
+	    // do nothing.
+    };
+    straight25(); //go straight after time passed.
+}
+
+// take in a Vector v and spit out an angle in float.
+float calc_turn_angle(Vecotr v){
+	double delta_x = v.m_x0 - v.m_x1
+	double delta_y = v.m_y0 - v.m_y1
+	return atanf(delta_y/delta_x)/6.28*360;
+}
