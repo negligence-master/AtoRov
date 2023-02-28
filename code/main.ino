@@ -103,7 +103,7 @@ void loop(){
 				turn_angle = turn_angle * -1
 				dir = -1;
 			}
-			float dur = calc_turn_dur(turn_angle);
+			float dur = turn_angle*2.6125;
 			spin(dir, dur);
 			
 		}else{
@@ -195,8 +195,8 @@ void straight100(){
 void spin(int direction, int dur){
     auto now = std::chrono::steady_clock::now;
     auto stop_time = now() + dur;
-    motor_r.setSpeed(64*direction);  // Motor 1 runs forward/backward at 25% speed.
-    motor_l.setSpeed(64*direction);  // Motor 2 runs backward/forward at 25% speed.
+    motor_r.setSpeed(256*direction);  // Motor 1 runs forward/backward at 25% speed.
+    motor_l.setSpeed(256*direction);  // Motor 2 runs backward/forward at 25% speed.
     while (now() < stop_time) {
 	    // do nothing.
     };
