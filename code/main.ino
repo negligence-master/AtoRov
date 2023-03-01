@@ -39,10 +39,9 @@ void setup(){
   
   //set pin
   servo_claw.attach(4); // range open 60-0 close
-  servo_arm.attach(5);  // rangee up 100-40 down
+  servo_arm.attach(2);  // rangee up 100-40 down
   servo_claw.write(60); //set open angle to 90 degrees.
   servo_arm.write(40); //set camera arm angle at 0 degree.
-  
   
   //set claw position to open.
   char buffer[40]; //for string formatting ...DO NOT REMOVE...
@@ -50,75 +49,106 @@ void setup(){
   Serial.println(buffer);
   sprintf(buffer, "The starting angle of camera servo is %d degree", servo_arm.read());
   Serial.println(buffer);
+  
 }
 
 void loop(){
-  if(state){
-    
-    if(firstrun){
-      pixy.changeProg("line"); //changing to linefollowing library
-      firstrun = false; //make sure it only run in the first time.
-    }
-    
-    
-    // print all vectors
-    
-    //<pixy.line.numVectors> is
-    // Member variables for pixy.line(var type :uint8_t)
-    // it keep tracks of: The number of lines in the vectors variable.
+ if(state){
+   
+   if(firstrun){
+     pixy.changeProg("line"); //changing to linefollowing library
+     firstrun = false; //make sure it only run in the first time.
+   }
+   
+   
+   // print all vectors
+   
+   //<pixy.line.numVectors> is
+   // Member variables for pixy.line(var type :uint8_t)
+   // it keep tracks of: The number of lines in the vectors variable.
 
-    //<pixy.line.vecotrs> is
-    // Member variables for pixy.line(var type :array of Vector(struct))
-    // This array contains either all of the detected lines if getAllFeatures() is called or the Vector if getMainFeatures() is called.
-    
-    // here are some helpful info for Vector Struct
-    
-    // uint8_t m_x0
-    // This variable contains the x location of the tail of the Vector or line. The value ranges between 0 and frameWidth (79) 3)
-    
-    // uint8_t m_y0
-    // This variable contains the y location of the tail of the Vector or line. The value ranges between 0 and frameWidth (52).
-    
-    // uint8_t m_x1
-    // This variable contains the x location of the head (arrow end) of the Vector or line. The value ranges between 0 and frameWidth (79).
-    
-    // uint8_t m_y1
-    // This variable contains the y location of the head (arrow end) of the Vector or line. The value ranges between 0 and frameWidth (52).
+   //<pixy.line.vecotrs> is
+   // Member variables for pixy.line(var type :array of Vector(struct))
+   // This array contains either all of the detected lines if getAllFeatures() is called or the Vector if getMainFeatures() is called.
+   
+   // here are some helpful info for Vector Struct
+   
+   // uint8_t m_x0
+   // This variable contains the x location of the tail of the Vector or line. The value ranges between 0 and frameWidth (79) 3)
+   
+   // uint8_t m_y0
+   // This variable contains the y location of the tail of the Vector or line. The value ranges between 0 and frameWidth (52).
+   
+   // uint8_t m_x1
+   // This variable contains the x location of the head (arrow end) of the Vector or line. The value ranges between 0 and frameWidth (79).
+   
+   // uint8_t m_y1
+   // This variable contains the y location of the head (arrow end) of the Vector or line. The value ranges between 0 and frameWidth (52).
 
 
-    int8_t i; // for loop indexing ...DO NOT REMOVE...
-    
-    char buf[128]; // for string formating ...DO NOT REMOVE...
+   int8_t i; // for loop indexing ...DO NOT REMOVE...
+   
+   char buf[128]; // for string formating ...DO NOT REMOVE...
 
-    pixy.line.getAllFeatures();
+   pixy.line.getAllFeatures();
 
-    // detect if new vector found
-    if (pixy.line.numVectors >= vector_count){
-      occurance = 0;
-      vector_count = pixy.line.numVectors; // update vector count
-      float turn_angle = calc_turn_angle(pixy.line.vectors[vector_count-1]); // calculate turn angle by passing the newest vector to a function.
-                             // note that 1st vector has index 0, 2nd vector has index 1....
-                             // therefore the newest vector will always be index len-1
-      int direction = 1; // default to turn right
-      if(turn_angle < 0){ // adjust if it is actually left.
-        turn_angle = turn_angle * -1;
-        direction = -1;
-      }
-      float dur = turn_angle*2.6125;
-      spin(direction, dur);
-      
-    }else{
-      occurance += 1;
-      if(occurance == 1){
-        straight100(); // start fast
-      }else if(occurance == 2){
-        straight50(); // gradually slow down
-      }else{
-        straight25(); // slow down to 25%
-      }
-      
-    }
-    
+   // detect if new vector found
+   if (pixy.line.numVectors > vector_count){
+     occurance = 0;
+     vector_count = pixy.line.numVectors; // update vector count
+     Serial.print(pixy.line.vectors[vector_count-1].m_x0);
+     Serial.print(", ");
+     Serial.print(pixy.line.vectors[vector_count-1].m_y0);
+     Serial.println("");
+     Serial.print(pixy.line.vectors[vector_count-1].m_x1);
+     Serial.print(", ");
+     Serial.print(pixy.line.vectors[vector_count-1].m_y1);
+     Serial.println("");
+     float turn_angle = calc_turn_angle(pixy.line.vectors[vector_count-1]);
+     Serial.println(turn_angle);
+     delay(2000);
+     if(turn_angle >=0){
+        Serial.println("expect turn right");
+        float expect__turn_time = turn_angle/90*1000;
+        Serial.print("expect turn time");
+        Serial.println(expect__turn_time);
+        spin(1,expect__turn_time);
+     }else{
+        Serial.println("expect turn left");
+        float expect__turn_time = -1*turn_angle/90*1000;
+        Serial.print("expect turn time");
+        Serial.println(expect__turn_time);
+        spin(-1,expect__turn_time);
+     }
+     
+   }else{
+    straight25();
+   }
+     
+     
+//     float turn_angle = calc_turn_angle(pixy.line.vectors[vector_count-1]); // calculate turn angle by passing the newest vector to a function.
+//                            // note that 1st vector has index 0, 2nd vector has index 1....
+//                            // therefore the newest vector will always be index len-1
+//     int direction = 1; // default to turn right
+//     if(turn_angle < 0){ // adjust if it is actually left.
+//       turn_angle = turn_angle * -1;
+//       direction = -1;
+//     }
+//     float dur = turn_angle*2.6125;
+//     spin(direction, dur);
+//     
+//   }else{
+//     occurance += 1;
+//     if(occurance == 1){
+//       straight100(); // start fast
+//     }else if(occurance == 2){
+//       straight50(); // gradually slow down
+//     }else{
+//       straight25(); // slow down to 25%
+//     }
+
+
+   
 // sample code for pixy library
 //    for (i=0; i<pixy.line.numVectors; i++) 
 //    {
@@ -134,29 +164,29 @@ void loop(){
 //      Serial.print(buf);
 //      pixy.line.intersections[i].print();
 //    }
-    
-    
+   
+   
 
-    //case1 no new vector (straight)
+   //case1 no new vector (straight)
 
-    //case 2 new vector. (calculate movement using coordinates)
+   //case 2 new vector. (calculate movement using coordinates)
 
-    //case 3 saw at the end of line && set state to 1
-    
-  }else{
-    
-    if(firstrun){
-      pixy.changeProg("video"); //changing to color identification library
-      firstrun = false; //make sure it only run in the first time.
-    }
-    //switch to color identification library
+   //case 3 saw at the end of line && set state to 1
+   
+ }else{
+   
+   if(firstrun){
+     pixy.changeProg("video"); //changing to color identification library
+     firstrun = false; //make sure it only run in the first time.
+   }
+   //switch to color identification library
 
-    //set camera position to up
+   //set camera position to up
 
-    //continue moving until close to the object. And close claw
-    
-  }
-  
+   //continue moving until close to the object. And close claw
+   
+ }
+ 
 }
 
 void reverseServo(Servo s){
@@ -171,10 +201,23 @@ void reverseServo(Servo s){
   }
 }
 
+void stopp(){
+  motor_r.setSpeed(0);   // Motor 1 runs forward at 25% speed.
+  motor_l.setSpeed(0);  // Motor 2 runs forward at 25% speed. 
+}
+
+
+// go stragith at 5% power
+void straight05(){
+  motor_r.setSpeed(13);   // Motor 1 runs forward at 25% speed.
+  motor_l.setSpeed(-13);  // Motor 2 runs forward at 25% speed. 
+}
+
+
 // go stragith at 25% power
 void straight25(){
   motor_r.setSpeed(64);   // Motor 1 runs forward at 25% speed.
-  motor_l.setSpeed(-64);  // Motor 2 runs forward at 25% speed. 
+  motor_l.setSpeed(-66);  // Motor 2 runs forward at 25% speed. 
 }
 
 
@@ -192,12 +235,15 @@ void straight100(){
 
 // spin in _ direction. (direction should be int +1 for right and -1 for left.)
 // for set ammount of time in millisecond
+// 1000 milli ~= 90 degree turn
 
 void spin(int direction, int dur){
-        motor_r.setSpeed(256*direction);  // Motor 1 runs forward/backward at 25% speed.
-    motor_l.setSpeed(256*direction);  // Motor 2 runs backward/forward at 25% speed.
+    Serial.println("start of turn");
+    motor_r.setSpeed(-64*direction);  // Motor 1 runs forward/backward at 25% speed.
+    motor_l.setSpeed(-66*direction);  // Motor 2 runs backward/forward at 25% speed.
     delay(dur);
-    straight25(); //go straight after time passed.
+    stopp(); //go straight after time passed.
+    Serial.println("end of turn");
 }
 
 // take in a Vector v and spit out an angle in float.
