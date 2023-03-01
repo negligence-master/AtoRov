@@ -90,11 +90,27 @@ void loop(){
    
    char buf[128]; // for string formating ...DO NOT REMOVE...
 
-   pixy.line.getAllFeatures();
+   pixy.line.getMainFeatures();
 
+//   for (i=0; i<pixy.line.numVectors; i++) 
+//    {
+//      Serial.print(pixy.line.vectors[i].m_x0);
+//      Serial.print(", ");
+//      Serial.print(pixy.line.vectors[i].m_y0);
+//      Serial.println("");
+//      Serial.print(pixy.line.vectors[i].m_x1);
+//      Serial.print(", ");
+//      Serial.print(pixy.line.vectors[i].m_y1);
+//      Serial.println("");
+//      float turn_angle = calc_turn_angle(pixy.line.vectors[vector_count-1]);
+//      Serial.println(turn_angle);
+//    }
+  
    // detect if new vector found
-   if (pixy.line.numVectors > vector_count){
+//   Serial.println(pixy.line.numVectors);
+   if (pixy.line.numVectors){
      occurance = 0;
+     
      vector_count = pixy.line.numVectors; // update vector count
      Serial.print(pixy.line.vectors[vector_count-1].m_x0);
      Serial.print(", ");
@@ -106,19 +122,23 @@ void loop(){
      Serial.println("");
      float turn_angle = calc_turn_angle(pixy.line.vectors[vector_count-1]);
      Serial.println(turn_angle);
-     delay(2000);
-     if(turn_angle >=0){
+     
+     if(turn_angle >=30){
+        delay(1500);
         Serial.println("expect turn right");
         float expect__turn_time = turn_angle/90*1000;
         Serial.print("expect turn time");
         Serial.println(expect__turn_time);
         spin(1,expect__turn_time);
-     }else{
+     }else if(turn_angle <= -30){
+        delay(1500);
         Serial.println("expect turn left");
         float expect__turn_time = -1*turn_angle/90*1000;
         Serial.print("expect turn time");
         Serial.println(expect__turn_time);
         spin(-1,expect__turn_time);
+     }else{
+        straight25(); 
      }
      
    }else{
