@@ -1,6 +1,8 @@
 // include all libraries
 #include <stdio.h>; // for basic functionality
-#include <math.h>; // for trigs
+//#include <chrono>   // for timer
+//#include <cmath.h>;    // for trigs
+#include <math.h>;
 #include <Pixy2.h>; // for pixy duhhh
 #include <Servo.h>; // for servo
 #include <CytronMotorDriver.h>; //for motor driver
@@ -202,7 +204,7 @@ void spin(int direction, int dur){
 float calc_turn_angle(struct Vector v){
   double delta_x = v.m_x1 - v.m_x0; // right is positive
   double delta_y = v.m_y0 - v.m_y1; // up is positive
-  double angle = atanf(delta_y/delta_x)/6.28*360;
+  double angle = atanf(delta_y/delta_x)/(M_PI*2)*360;
   if(delta_x > 0 && delta_y > 0){
     return 90-angle;
   }else if(delta_x > 0 && delta_y < 0){
