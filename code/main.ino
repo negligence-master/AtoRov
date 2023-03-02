@@ -53,6 +53,7 @@ void setup(){
 }
 
 void loop(){
+ 
  if(state){
    
    if(firstrun){
@@ -112,37 +113,39 @@ void loop(){
      occurance = 0;
      
      vector_count = pixy.line.numVectors; // update vector count
-     Serial.print(pixy.line.vectors[vector_count-1].m_x0);
-     Serial.print(", ");
-     Serial.print(pixy.line.vectors[vector_count-1].m_y0);
-     Serial.println("");
-     Serial.print(pixy.line.vectors[vector_count-1].m_x1);
-     Serial.print(", ");
-     Serial.print(pixy.line.vectors[vector_count-1].m_y1);
-     Serial.println("");
      float turn_angle = calc_turn_angle(pixy.line.vectors[vector_count-1]);
-     Serial.println(turn_angle);
-     
-     if(turn_angle >=30){
-        delay(1500);
+//     Serial.println(turn_angle);
+     float expect__turn_time = 0;
+     if(turn_angle >= 10){
+        expect__turn_time = turn_angle/90*1000;
+     }
+     else if(turn_angle <= -10){
+        expect__turn_time = -1*turn_angle/90*1000;
+     }
+     if(expect__turn_time > 0){
+        stopp();
+        Serial.print(pixy.line.vectors[vector_count-1].m_x0);
+        Serial.print(", ");
+        Serial.print(pixy.line.vectors[vector_count-1].m_y0);
+        Serial.println("");
+        Serial.print(pixy.line.vectors[vector_count-1].m_x1);
+        Serial.print(", ");
+        Serial.print(pixy.line.vectors[vector_count-1].m_y1);
+        Serial.println("");
+        Serial.print("expect turn angle");
+        Serial.println(turn_angle);
         Serial.println("expect turn right");
-        float expect__turn_time = turn_angle/90*1000;
         Serial.print("expect turn time");
         Serial.println(expect__turn_time);
         spin(1,expect__turn_time);
-     }else if(turn_angle <= -30){
-        delay(1500);
-        Serial.println("expect turn left");
-        float expect__turn_time = -1*turn_angle/90*1000;
-        Serial.print("expect turn time");
-        Serial.println(expect__turn_time);
-        spin(-1,expect__turn_time);
+        stopp();
+        
      }else{
-        straight25(); 
+        straight50(); 
      }
      
    }else{
-    straight25();
+    straight50();
    }
      
      
@@ -240,12 +243,19 @@ void straight25(){
   motor_l.setSpeed(-66);  // Motor 2 runs forward at 25% speed. 
 }
 
+void back25(){
+  motor_r.setSpeed(-64);   // Motor 1 runs forward at 25% speed.
+  motor_l.setSpeed(66);  // Motor 2 runs forward at 25% speed. 
+}
+
 
 // go stragith at 50% power
 void straight50(){
   motor_r.setSpeed(128);
   motor_l.setSpeed(-128);
 }
+
+
 
 // go stragith at 100% power
 void straight100(){
@@ -259,8 +269,15 @@ void straight100(){
 
 void spin(int direction, int dur){
     Serial.println("start of turn");
-    motor_r.setSpeed(-64*direction);  // Motor 1 runs forward/backward at 25% speed.
-    motor_l.setSpeed(-66*direction);  // Motor 2 runs backward/forward at 25% speed.
+//    motor_r.setSpeed(-64*direction);  // Motor 1 runs forward/backward at 25% speed.
+    if(direction == 1){
+        motor_r.setSpeed(0);
+        motor_l.setSpeed(-60);  // Motor 2 runs backward/forward at 25% speed.
+    }else{
+        motor_r.setSpeed(58);
+        motor_l.setSpeed(0);  // Motor 2 runs backward/forward at 25% speed.
+    }
+    
     delay(dur);
     stopp(); //go straight after time passed.
     Serial.println("end of turn");
@@ -268,8 +285,8 @@ void spin(int direction, int dur){
 
 // take in a Vector v and spit out an angle in float.
 float calc_turn_angle(struct Vector v){
-  double delta_x = v.m_x1 - v.m_x0; // right is positive
-  double delta_y = v.m_y0 - v.m_y1; // up is positive
+  double delta_x = v.m_x1 - 39; // right is positive
+  double delta_y = 80 - v.m_y1; // up is positive
   double angle = atanf(delta_y/delta_x)/(M_PI*2)*360;
   if(delta_x > 0 && delta_y > 0){
     return 90-angle;
