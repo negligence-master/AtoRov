@@ -1,5 +1,6 @@
-<img src="./documentation/project_icon.png" width="500" alt="project logo">
-
+<picture>
+  <img src="./documentation/project_icon.png" width="500" alt="project logo">
+</picture> <!-- prevent user from clicking on image and being redirect to new page -->
 # AtoRov (a Negligence project)
 > Autonomous Rover written in Arduino.
 
@@ -22,6 +23,7 @@
 - you can find all the code in code folder!  
   - here's a quick view at what's in that folder.
   - main.ino is main code, **please comment the code!**
+  - pixy_param.prm is fine-tuned parameter. you can explain what you change in param_update_log.txt.
   - rough.ino is pseudo code, you can also view it [here](https://docs.google.com/document/d/1YSSXJ3OUwgdDNNxMu8pstoW31_rIilNodYSdIQzhhe8/edit?usp=sharing)
   - idea.txt is for new ideas. add findings, ideas here!
 - you can find all the documentation for our project in the document folder
@@ -35,7 +37,7 @@
 For the code to work you need to download the following libraryies
 
 - [pixy2 library](https://pixycam.com/downloads-pixy2/). (be very careful as pixy library is different from pixy2.)
-
+- [pixymon](#) (to load the pixy parameter.)
 - [motor driver library](https://github.com/CytronTechnologies/CytronMotorDriver)(follow the installation instruction in the linked page)
 
 ## other helpful links
